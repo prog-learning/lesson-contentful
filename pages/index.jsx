@@ -1,6 +1,5 @@
 import { createClient } from 'contentful';
-import Image from 'next/image';
-import ReactMarkdown from 'react-markdown';
+import Router from 'next/router';
 
 export const getStaticProps = async () => {
   const client = createClient({
@@ -13,17 +12,33 @@ export const getStaticProps = async () => {
 
 export default function Home({ items }) {
   console.log(items);
-  const { title, content, image, state } = items[0].fields;
+
+  const handleClick = (postId) => {
+    Router.push(`/posts/${postId}`);
+  };
+
   return (
     <div>
       <h1>Lesson Contentful</h1>
-      <div style={{ border: '1px solid #444', padding: '16px', margin: '8px' }}>
-        <h1>{title}</h1>
-        <hr />
-        <button>❤️ {state.favorites}</button>
-        <ReactMarkdown>{content}</ReactMarkdown>
-        <Image src={'https:' + image.fields.file.url} width={image.fields.file.details.image.width} height={image.fields.file.details.image.height} />
-      </div>
+      <h2>Post List</h2>
+      {items.map((item) => {
+        const { title } = item.fields;
+        const { id } = item.sys;
+        return (
+          <div
+            key={id}
+            onClick={() => handleClick(id)}
+            style={{
+              border: '1px solid #444',
+              padding: '16px',
+              margin: '8px',
+              cursor: 'pointer',
+            }}
+          >
+            <h3>{title}</h3>
+          </div>
+        );
+      })}
     </div>
   );
 }
